@@ -2,7 +2,36 @@
 <html>
   <head>
     <script type="module" src="script.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+      }
+      label {
+        margin-right: 10px;
+      }
+      select {
+        margin-bottom: 20px;
+      }
+      .bookmark {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+      }
+      a {
+        color: blue;
+      }
+    </style>
   </head>
   <body>
+    <h1>Bookmarks App</h1>
+    <!-- Dropdown to choose user -->
+    <label for="userSelect">Select User:</label>
+    <select id="userSelect">
+      <option value="">-- Choose a user --</option>
+    </select>
+    <!-- Where bookmarks will appear -->
+    <div id="bookmarksContainer"></div>
   </body>
 </html>
