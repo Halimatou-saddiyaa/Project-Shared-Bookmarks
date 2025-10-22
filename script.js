@@ -1,56 +1,120 @@
-// This is a placeholder file which shows how you can access functions defined in other files.
-// It can be loaded into index.html.
-// You can delete the contents of the file once you have understood how it works.
-// Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
-// You can't open the index.html file using a file:// URL.
-
 import { getUserIds, getData, setData } from "./storage.js";
 
-/*window.onload = function () {
-  const users = getUserIds();
-  document.querySelector("body").innerText = `There are ${users.length} users`;
-}; */
+window.onload = function () {
+  // --- Basic setup for readability only ---
+  document.body.style.fontFamily = "sans-serif";
+  document.body.style.margin = "20px";
 
-const userSelect = document.getElementById("userSelect");
-const container = document.getElementById("bookmarksContainer");
+  // --- Get references to DOM elements ---
+  const userSelect = document.getElementById("userSelect");
+  const container = document.getElementById("bookmarksContainer");
+  const form = document.getElementById("bookmarkForm");
+  const urlInput = document.getElementById("urlInput");
+  const titleInput = document.getElementById("titleInput");
+  const descInput = document.getElementById("descInput");
 
-// --- Populate dropdown ---
-const userIds = getUserIds();
-userIds.forEach((id) => {
-  const option = document.createElement("option");
-  option.value = id;
-  option.textContent = `User ${id}`;
-  userSelect.appendChild(option);
-});
+  // Create a message element under the dropdown
+  const userMessage = document.createElement("p");
+  userMessage.style.color = "darkred";
+  userSelect.insertAdjacentElement("afterend", userMessage);
 
-// --- When user changes selection ---
-userSelect.addEventListener("change", () => {
-  const userId = userSelect.value;
+  // --- Populate dropdown with user IDs ---
+  const userIds = getUserIds();
+  userIds.forEach((id) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = `User ${id}`;
+    userSelect.appendChild(option);
+  });
 
-  // If nothing is selected, clear the container
-  if (!userId) {
-    container.innerHTML = "<p>Please select a user.</p>";
-    return;
+  // --- Display bookmarks for selected user ---
+  function displayBookmarks(userId) {
+    container.textContent = ""; // clear old bookmarks
+
+    const data = getData(userId);
+
+    // If no data stored, show message
+    if (!data || !data.bookmarks || data.bookmarks.length === 0) {
+      const msg = document.createElement("p");
+      msg.textContent = "This user has no bookmarks yet.";
+      container.appendChild(msg);
+      return;
+    }
+
+    // Sort bookmarks in reverse chronological order
+    const sorted = [...data.bookmarks].sort(
+      (a, b) => new Date(b.created) - new Date(a.created)
+    );
+
+    // Create DOM nodes for each bookmark
+    sorted.forEach((b) => {
+      const div = document.createElement("div");
+      div.style.border = "1px solid #ccc";
+      div.style.padding = "10px";
+      div.style.marginTop = "10px";
+
+      const title = document.createElement("h3");
+      const link = document.createElement("a");
+      link.href = b.url;
+      link.target = "_blank";
+      link.textContent = b.title;
+      title.appendChild(link);
+
+      const desc = document.createElement("p");
+      desc.textContent = b.description;
+
+      const date = document.createElement("small");
+      date.textContent = `Added on ${b.created}`;
+
+      div.append(title, desc, date);
+      container.appendChild(div);
+    });
   }
 
-  const data = getData(userId);
+  // --- When user changes selection ---
+  userSelect.addEventListener("change", () => {
+    const userId = userSelect.value;
 
-  // If no data stored, show message
-  if (!data || !data.bookmarks || data.bookmarks.length === 0) {
-    container.innerHTML = "<p>This user has no bookmarks yet.</p>";
-    return;
-  }
+    // If nothing is selected, clear the container
+    if (!userId) {
+      userMessage.textContent = "Please select a user.";
+      container.textContent = "";
+    } else {
+      userMessage.textContent = "";
+      displayBookmarks(userId);
+    }
+  });
 
-  // Display the bookmarks
-  container.innerHTML = sorted
-    .map(
-      (b) => `
-        <div class="bookmark">
-          <h3><a href="${b.url}" target="_blank">${b.title}</a></h3>
-          <p>${b.description}</p>
-          <small>Added on ${b.created}</small>
-        </div>
-      `
-    )
-    .join("");
-});
+  // --- Handle form submission ---
+  form.addEventListener("submit", (event) => {
+    event.preventDefault(); // stop page reload
+    const userId = userSelect.value;
+
+    // If no user selected, show message
+    if (!userId) {
+      userMessage.textContent = "Please select a user.";
+      return;
+    }
+
+    // Get data from form fields
+    const newBookmark = {
+      url: urlInput.value.trim(),
+      title: titleInput.value.trim(),
+      description: descInput.value.trim(),
+      created: new Date().toISOString().split("T")[0],
+    };
+
+    // Get existing data or create a new object
+    const data = getData(userId) || { bookmarks: [] };
+    data.bookmarks.push(newBookmark);
+
+    // Save it back
+    setData(userId, data);
+
+    // Reset form
+    form.reset();
+
+    // Refresh list
+    displayBookmarks(userId);
+  });
+};
