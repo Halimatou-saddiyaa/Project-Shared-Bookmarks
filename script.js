@@ -18,7 +18,7 @@ window.onload = function () {
   const titleInput = document.getElementById("titleInput");
   const descInput = document.getElementById("descInput");
 
-  // Message element for user feedback
+  // Message element for user
   const userMessage = document.createElement("p");
   userMessage.style.color = "darkred";
   userSelect.insertAdjacentElement("afterend", userMessage);
