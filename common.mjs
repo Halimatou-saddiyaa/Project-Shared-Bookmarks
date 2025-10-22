@@ -6,7 +6,7 @@ export function sortBookmarks(bookmarks) {
   );
 }
 
-//Create a new bookmark object.
+// Create a new bookmark with the current date
 export function createBookmarkObject(url, title, description) {
   return {
     url: url.trim(),
@@ -16,7 +16,7 @@ export function createBookmarkObject(url, title, description) {
   };
 }
 
-//Returns sorted array of bookmarks, or empty array if none.
+// Extract and sort bookmarks from stored data.
 export function getDisplayBookmarks(data) {
   if (!data || !Array.isArray(data.bookmarks)) return [];
   return sortBookmarks(data.bookmarks);
