@@ -1,4 +1,9 @@
 import { getUserIds, getData, setData } from "./storage.js";
+import {
+  sortBookmarks,
+  createBookmarkObject,
+  getDisplayBookmarks,
+} from "./common.mjs";
 
 window.onload = function () {
   // --- Basic setup for readability only ---
@@ -34,20 +39,17 @@ window.onload = function () {
     const data = getData(userId);
 
     // If no data stored, show message
-    if (!data || !data.bookmarks || data.bookmarks.length === 0) {
+    const sortedBookmarks = getDisplayBookmarks(data);
+
+    if (sortedBookmarks.length === 0) {
       const msg = document.createElement("p");
       msg.textContent = "This user has no bookmarks yet.";
       container.appendChild(msg);
       return;
     }
 
-    // Sort bookmarks in reverse chronological order
-    const sorted = [...data.bookmarks].sort(
-      (a, b) => new Date(b.created) - new Date(a.created)
-    );
-
     // Create DOM nodes for each bookmark
-    sorted.forEach((b) => {
+    sortedBookmarks.forEach((b) => {
       const div = document.createElement("div");
       div.style.border = "1px solid #ccc";
       div.style.padding = "10px";
@@ -97,12 +99,11 @@ window.onload = function () {
     }
 
     // Get data from form fields
-    const newBookmark = {
-      url: urlInput.value.trim(),
-      title: titleInput.value.trim(),
-      description: descInput.value.trim(),
-      created: new Date().toISOString().split("T")[0],
-    };
+    const newBookmark = createBookmarkObject(
+      urlInput.value,
+      titleInput.value,
+      descInput.value
+    );
 
     // Get existing data or create a new object
     const data = getData(userId) || { bookmarks: [] };
