@@ -1,28 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <title>Bookmarks App</title>
     <script type="module" src="script.js"></script>
-    <style>
-      body {
-        font-family: sans-serif;
-        margin: 20px;
-      }
-      label {
-        margin-right: 10px;
-      }
-      select {
-        margin-bottom: 20px;
-      }
-      .bookmark {
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 8px;
-        border-radius: 6px;
-      }
-      a {
-        color: blue;
-      }
-    </style>
   </head>
   <body>
     <h1>Bookmarks App</h1>
@@ -31,6 +12,24 @@
     <select id="userSelect">
       <option value="">-- Choose a user --</option>
     </select>
+
+    <!-- Bookmark form -->
+    <form id="bookmarkForm">
+      <h2>Add a new bookmark</h2>
+      <label>
+        URL:
+        <input type="url" id="urlInput" required />
+      </label>
+      <label>
+        Title:
+        <input type="text" id="titleInput" required />
+      </label>
+      <label>
+        Description:
+        <textarea id="descInput" required></textarea>
+      </label>
+      <button type="submit">Add Bookmark</button>
+    </form>
     <!-- Where bookmarks will appear -->
     <div id="bookmarksContainer"></div>
   </body>
